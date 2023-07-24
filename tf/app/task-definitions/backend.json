@@ -1,0 +1,53 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "${image}",
+    "environment": [
+      {
+        "name": "LOGGING_LEVEL_GUESTBOOK",
+        "value": "DEBUG"
+      },
+      {
+        "name": "LOGGING_LEVEL",
+        "value": "DEBUG"
+      },
+      {
+        "name": "SPRING_PROFILES_ACTIVE",
+        "value": "postgres,s3,local"
+      },
+      {
+        "name": "DATABASE_URL",
+        "value": "jdbc:postgresql://${db_host}:${db_port}/${db_name}"
+      },
+      {
+        "name": "DATABASE_USERNAME",
+        "value": "${db_user}"
+      },
+      {
+        "name": "DATABASE_PASSWORD",
+        "value": "${db_password}"
+      },
+      {
+        "name": "GUESTBOOK_AWS_REGION",
+        "value": "${region}"
+      },
+      {
+        "name": "GUESTBOOK_AWS_BUCKET",
+        "value": "${picture_bucket}"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${backend_port}
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${logs_group}",
+        "awslogs-region": "${logs_region}",
+        "awslogs-stream-prefix": "${container_name}"
+      }
+    }
+  }
+]

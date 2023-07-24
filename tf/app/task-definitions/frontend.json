@@ -1,0 +1,19 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "${image}",
+    "portMappings": [
+      {
+        "containerPort": ${frontend_port}
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${logs_group}",
+        "awslogs-region": "${logs_region}",
+        "awslogs-stream-prefix": "${container_name}"
+      }
+    }
+  }
+]

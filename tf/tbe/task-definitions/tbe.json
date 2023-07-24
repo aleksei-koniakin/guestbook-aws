@@ -1,0 +1,99 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "${image}",
+    "secrets": [
+      {
+        "name": "TBE_DB_PASSWORD",
+        "valueFrom": "${db_password_arn}"
+      },
+      {
+        "name": "TBE_AUTH_CLIENT-SECRET",
+        "valueFrom": "${oauth_secret_arn}"
+      }
+    ],
+    "environment": [
+      {
+        "name": "TBE_LICENSE_ACCEPT",
+        "value": "eap.v1"
+      },
+      {
+        "name": "TBE_DEPLOYMENT_URL",
+        "value": "https://tbe.guestbook.teamcity.com"
+      },
+      {
+        "name": "LOGGING_LEVEL_GUESTBOOK",
+        "value": "DEBUG"
+      },
+      {
+        "name": "LOGGING_LEVEL",
+        "value": "DEBUG"
+      },
+      {
+        "name": "TBE_DB_HOST",
+        "value": "${db_host}:${db_port}"
+      },
+      {
+        "name": "TBE_DB_DATABASE",
+        "value": "${db_name}"
+      },
+      {
+        "name": "TBE_DB_USER",
+        "value": "${db_user}"
+      },
+      {
+        "name": "TBE_MINIO_USES3AUTOCONFIGURATION",
+        "value": "true"
+      },
+      {
+        "name": "TBE_MINIO_BUCKET",
+        "value": "${tbe_bucket}"
+      },
+      {
+        "name": "TBE_AUTH_VENDOR",
+        "value": "jetbrains-space"
+      },
+      {
+        "name": "TBE_AUTH_REQUIRED-SCOPES",
+        "value": "Profile:ViewProfile"
+      },
+      {
+        "name": "TBE_AUTH_ROOT-ADMIN-SUBJECTS",
+        "value": "2D6G6u0RWKVm" 
+      },
+      {
+        "name": "TBE_AUTH_CLIENT-ID",
+        "value": "7eb573e7-3b20-4d1f-966c-e52e95cc0918"
+      },
+      {
+        "name": "TBE_AUTH_LOGIN-URL",
+        "value": "https://guestbook.jetbrains.space/oauth/auth"
+      },
+       {
+        "name": "TBE_AUTH_TOKEN-URL",
+        "value": "https://guestbook.jetbrains.space/oauth/token"
+      },
+      {
+        "name": "TBE_AUTH_JWT-CERTS-URL",
+        "value": "https://guestbook.jetbrains.space/oauth/jwks.json"
+      },
+      { 
+        "name": "TBE_TBE_IJ_PLUGIN_TBE_PLUGIN_REPOSITORY_TYPE",
+        "value": "TBE" 
+      } 
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${backend_port}
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${logs_group}",
+        "awslogs-region": "${logs_region}",
+        "awslogs-stream-prefix": "${container_name}"
+      }
+    }
+  }
+]
