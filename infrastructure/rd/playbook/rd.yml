@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Add apt key for Corretto
+      apt_key:
+        url: https://apt.corretto.aws/corretto.key
+        state: present
+
+    - name: Add apt repository for Corretto
+      apt_repository:
+        repo: deb https://apt.corretto.aws stable main
+
+    - name: Install Tools
+      apt:
+        name:
+          - java-11-amazon-corretto-jdk
+          - python3.9
+          - fail2ban
+        update_cache: yes
+
+    - name: Clone petclinic
+      become: yes
+      become_user: ubuntu
+      git:
+        repo: https://github.com/ErnstHaagsman/spring-petclinic.git
+        dest: /home/ubuntu/petclinic
+
+    - name: Run mvn install for petclinic
+      become: yes
+      become_user: ubuntu
+      shell:
+        cmd: "./mvnw install"
+        chdir: /home/ubuntu/petclinic

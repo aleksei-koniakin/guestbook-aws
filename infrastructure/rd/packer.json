@@ -1,0 +1,32 @@
+{
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "us-west-2",
+    "profile": "default",
+    "source_ami_filter": {
+      "filters": {
+        "name": "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
+      },
+      "owners": ["099720109477"],
+      "most_recent": true
+    },
+    "instance_type": "m3.medium",
+    "ssh_username": "ubuntu",
+    "ami_name": "RD {{timestamp}}"
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": "/usr/bin/cloud-init status --wait && sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install python3-pip -y"
+    },
+    {
+      "type": "shell",
+      "inline": "sudo -H pip3 install ansible awscli"
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file": "./playbook/rd.yml",
+      "playbook_dir": "./playbook/"
+    }
+  ]
+}

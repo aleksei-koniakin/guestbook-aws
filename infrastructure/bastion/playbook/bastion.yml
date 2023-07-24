@@ -1,0 +1,77 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+    key_script_path: /usr/bin/authorized_keys.sh
+    bastion_user: jetbrains
+    cron_user: aws
+  tasks:
+    - name: Create user for SSH forwarding
+      user:
+        name: "{{ bastion_user }}"
+        create_home: no
+        shell: /bin/false
+
+    - name: Install Fail2ban
+      apt:
+        name: fail2ban
+        state: latest
+        update_cache: yes
+
+    - name: Create keys script
+      template:
+        src: files/authorized_keys.sh
+        dest: "{{ key_script_path }}"
+        owner: root
+        mode: 0755
+
+    - name: Configure SSH
+      template:
+        src: files/sshd_config
+        dest: /etc/ssh/sshd_config
+        mode: 0644
+
+#     For some reason pip fails when run using Packer
+#     but not when I SSH in manually in debug mode
+#     to the host that packer creates. That's why
+#     this is now pre-provisioned with the shell.
+
+#    - name: Install awscli
+#      pip:
+#        name:
+#          - setuptools
+#          - awscli
+#        state: latest
+#        executable: /usr/bin/pip3
+
+    - name: Create user for cron job
+      user:
+        name: "{{ cron_user }}"
+        shell: /bin/false
+
+    - name: Create folder for keys
+      file:
+        path: "/var/keys"
+        state: directory
+        owner: "{{ cron_user }}"
+        mode: 0755
+
+    - name: Create folder for logs
+      file:
+        path: "/var/log/aws_sync"
+        state: directory
+        owner: "{{ cron_user }}"
+        mode: 0755
+
+    - name: Upload cron script
+      copy:
+        src: files/aws_sync.sh
+        dest: /usr/bin/aws_sync.sh
+        mode: 0755
+
+    - name: Set up sync cron job
+      cron:
+        name: "s3 key sync"
+        user: "{{ cron_user }}"
+        minute: "*"
+        job: "/usr/bin/aws_sync.sh >> /var/log/aws_sync/log 2>&1"
